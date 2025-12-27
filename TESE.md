@@ -216,11 +216,6 @@ Framework tem implicações para política: monitoramento de fluxos agregados, c
 
 A matemática de sistemas complexos sugere que crises são inevitáveis. A questão relevante não é "quem causa" mas "quem antecipa melhor" - e se antecipação coletiva paradoxalmente acelera o inevitável.
 
----
-
-## REFERÊNCIAS
-
-[Lista completa mantida do documento anterior]
 
 ---
 

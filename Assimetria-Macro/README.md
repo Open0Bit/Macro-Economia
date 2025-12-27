@@ -59,7 +59,7 @@ Assimetria-Macro/
 │
 ├── figures/                  # Visualizações geradas
 │
-├── TESE.md                   # Framework teórico completo (v3.0)
+├── FRAMEWORK.md                   # Framework teórico completo (v3.0)
 ├── run_pipeline.py           # Orquestrador principal
 ├── requirements.txt          # Dependências Python
 └── README.md                 # Este arquivo
@@ -348,7 +348,7 @@ Colaborações com:
   title = {Framework Teórico-Metodológico: Preparação Assimétrica e Crises Sistêmicas},
   year = {2024},
   publisher = {GitHub},
-  howpublished = {\url{https://github.com/[usuario]/Assimetria-Macro}},
+  howpublished = {\url{https://github.com/Open0Bit/Macro-Economia/tree/main/Assimetria-Macro}},
   note = {Versão 3.0}
 }
 ```

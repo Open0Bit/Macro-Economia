@@ -31,6 +31,6 @@ Este projeto conta com um **Setup Automatizado** que configura o ambiente e um *
 
 ### 1. Instalação Rápida
 ```bash
-git clone [https://github.com/Open0Bit/Macro-Economia.git](https://github.com/Open0Bit/Macro-Economia.git)
-cd Macro-Economia
+git clone https://github.com/Open0Bit/Macro-Economia.git
+cd Macro-Economia/Assimetria-Macro
 python setup.py

@@ -10,148 +10,90 @@ from pathlib import Path
 import time
 
 class ProjectSetup:
-    """Automação completa: Setup + Pipeline de Dados"""
+    """Automação completa: Setup + Pipeline de Dados + Restauração"""
     
     def __init__(self):
         self.base_dir = Path.cwd()
-        self.errors = []
         
-    def print_header(self, text):
-        print("\n" + "=" * 70)
-        print(f"  {text}")
-        print("=" * 70 + "\n")
-    
-    def print_step(self, step_num, text):
-        print(f"[{step_num}/6] {text}...")
-    
-    def create_directory_structure(self):
-        self.print_step(1, "Criando estrutura de diretórios")
-        directories = ['data/raw', 'data/processed', 'scripts', 'figures', 'output', 'docs']
-        for directory in directories:
-            (self.base_dir / directory).mkdir(parents=True, exist_ok=True)
-            
-    def create_requirements(self):
-        self.print_step(2, "Gerando requirements.txt")
-        reqs = """pandas>=2.0.0
-numpy>=1.24.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-scipy>=1.10.0
-statsmodels>=0.14.0
-fredapi>=0.5.0
-yfinance>=0.2.0
-requests>=2.31.0
-openpyxl>=3.1.0
-"""
-        (self.base_dir / 'requirements.txt').write_text(reqs)
+    def print_step(self, step, text):
+        print(f"[{step}/5] {text}...")
 
-    def create_license(self):
-        self.print_step(3, "Assinando LICENSE (MIT)")
-        license_text = """MIT License
+    def create_structure(self):
+        self.print_step(1, "Criando pastas")
+        for d in ['data/raw', 'data/processed', 'scripts', 'figures', 'output']:
+            (self.base_dir / d).mkdir(parents=True, exist_ok=True)
 
-Copyright (c) 2024 Gabriel W. Soares
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-"""
-        (self.base_dir / 'LICENSE').write_text(license_text)
-
-    def install_dependencies(self):
-        self.print_step(4, "Instalando dependências")
-        try:
-            subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
-        except:
-            print("  ! Aviso: Instalação automática falhou. Execute 'pip install -r requirements.txt' manualmente.")
+    def create_files(self):
+        self.print_step(2, "Gerando arquivos de configuração")
+        
+        # 1. Requirements
+        reqs = "pandas>=2.0.0\nnumpy>=1.24.0\nmatplotlib>=3.7.0\nseaborn>=0.12.0\nscipy>=1.10.0\nstatsmodels>=0.14.0\nfredapi>=0.5.0\nyfinance>=0.2.0\nrequests>=2.31.0"
+        (self.base_dir / 'requirements.txt').write_text(reqs, encoding='utf-8')
+        
+        # 2. License
+        license_txt = "MIT License\n\nCopyright (c) 2024 Gabriel W. Soares\n\nPermission is hereby granted, free of charge..."
+        (self.base_dir / 'LICENSE').write_text(license_txt, encoding='utf-8')
 
     def create_orchestrator(self):
-        """Cria um script para rodar tudo de uma vez"""
-        self.print_step(5, "Gerando orquestrador de pipeline")
+        self.print_step(3, "Criando orquestrador (run_pipeline.py)")
         
-        run_all_content = '''"""
-Script Orquestrador: Executa todo o pipeline de uma vez.
+        content = '''"""
+Script Orquestrador: Executa todo o pipeline automaticamente.
 """
 import subprocess
 import sys
-import time
 import os
 
-def run_step(script_name):
-    print(f"\\n>>> EXECUTANDO: {script_name}...")
-    t0 = time.time()
-    # Verifica se o arquivo existe
-    if not os.path.exists(f'scripts/{script_name}'):
-        print(f"X Erro: Arquivo scripts/{script_name} não encontrado.")
-        return False
-        
-    result = subprocess.run([sys.executable, f'scripts/{script_name}'])
-    dt = time.time() - t0
-    
-    if result.returncode == 0:
-        print(f"✓ {script_name} concluído em {dt:.1f}s")
-        return True
-    else:
-        print(f"X Erro em {script_name}")
-        return False
-
-if __name__ == "__main__":
+def run():
     print("=== INICIANDO PIPELINE MACRO ===")
+    scripts = ['00_download_data.py', '01_process_data.py', '02_leadlag_analysis.py', '03_synchronization.py']
     
-    steps = [
-        '00_download_data.py',
-        '01_process_data.py',
-        '02_leadlag_analysis.py',
-        '03_synchronization.py'
-    ]
-    
-    for step in steps:
-        if not run_step(step):
-            print("Pipeline interrompido por erro.")
+    for script in scripts:
+        path = f'scripts/{script}'
+        if not os.path.exists(path):
+            print(f"ERRO: {path} não encontrado. Execute setup.py novamente ou baixe do Git.")
+            continue
+            
+        print(f"\\n>>> Rodando {script}...")
+        ret = subprocess.run([sys.executable, path])
+        if ret.returncode != 0:
+            print("Erro na execução. Parando.")
             break
             
-    print("\\n=== PIPELINE FINALIZADO ===")
-'''
-        (self.base_dir / 'run_pipeline.py').write_text(run_all_content, encoding='utf-8')
-        print("  ✓ run_pipeline.py criado na raiz")
+    print("\\n=== CONCLUÍDO ===")
 
-    def run_pipeline_trigger(self):
-        """O Gatilho Automático"""
-        self.print_step(6, "Finalização")
+if __name__ == "__main__":
+    run()
+'''
+        (self.base_dir / 'run_pipeline.py').write_text(content, encoding='utf-8')
+
+    def install_libs(self):
+        self.print_step(4, "Instalando bibliotecas")
+        try:
+            subprocess.run([sys.executable, '-m', 'pip', 'install', '-r', 'requirements.txt'], check=True)
+        except:
+            print("  ! Aviso: Instale manualmente com 'pip install -r requirements.txt'")
+
+    def trigger(self):
+        self.print_step(5, "Finalizando")
         print("\n" + "="*50)
-        print("SETUP CONCLUÍDO COM SUCESSO!")
+        print("SETUP FINALIZADO COM SUCESSO!")
         print("Autor: Gabriel W. Soares")
         print("="*50)
         
-        # O GATILHO
-        print("\n[OPCIONAL] Deseja executar toda a análise agora?")
-        print("Isso irá baixar dados, processar e gerar os gráficos.")
-        print("Nota: Certifique-se de ter configurado a API KEY no script 00.")
-        choice = input("Digite 'S' para Sim ou ENTER para Sair: ").strip().upper()
-        
-        if choice == 'S':
-            print("\nIniciando Piloto Automático...\n")
-            try:
-                subprocess.run([sys.executable, 'run_pipeline.py'])
-            except Exception as e:
-                print(f"Erro ao executar pipeline: {e}")
+        print("\nDeseja rodar a análise completa agora? (S/N)")
+        if input(">> ").strip().upper() == 'S':
+            subprocess.run([sys.executable, 'run_pipeline.py'])
         else:
-            print("\nOk. Para rodar depois, use: python run_pipeline.py")
-
-    def run(self):
-        self.print_header("FRAMEWORK MACRO - SETUP")
-        self.create_directory_structure()
-        self.create_requirements()
-        self.create_license()
-        self.install_dependencies()
-        self.create_orchestrator()
-        self.run_pipeline_trigger()
+            print("Ok. Para rodar depois: python run_pipeline.py")
 
 if __name__ == "__main__":
+    ProjectSetup().run()
+    
+    # Método para rodar sequencialmente
     setup = ProjectSetup()
-    setup.run()
+    setup.create_structure()
+    setup.create_files()
+    setup.create_orchestrator()
+    setup.install_libs()
+    setup.trigger()

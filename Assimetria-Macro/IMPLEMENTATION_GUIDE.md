@@ -540,7 +540,7 @@ pip install -r requirements.txt
 python run_pipeline.py
 
 # 3. Revisar outputs
-# - Ler TESE.md para entender framework
+# - Ler FRAMEWORK.md para entender framework
 # - Examinar figuras/ para padrões visuais
 # - Revisar data/processed/ para dados numéricos
 ```
@@ -586,7 +586,7 @@ stress = pd.read_csv('data/processed/stress_index.csv',
 
 ### Fase 4: Escrita e Documentação (Dias 8-14)
 
-- Usar TESE.md como template para seu paper
+- Usar FRAMEWORK.md como template para seu paper
 - Adaptar seções para seu contexto
 - Incluir seus resultados customizados
 - Citar apropriadamente o framework original
@@ -644,8 +644,8 @@ Antes de reportar resultados, verificar:
 ## Suporte
 
 **Documentação completa:** README.md  
-**Framework teórico:** TESE.md  
-**Issues GitHub:** [[link do repositório](https://github.com/Open0Bit/Macro-Economia/tree/main/Assimetria-Macro)]  
+**Framework teórico:** FRAMEWORK.md  
+**Issues GitHub:** [[repositório](https://github.com/Open0Bit/Macro-Economia/tree/main/Assimetria-Macro)]  
 
 **Para dúvidas:**
 1. Primeiro, consultar FAQ no README.md

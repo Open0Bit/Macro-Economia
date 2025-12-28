@@ -21,12 +21,12 @@ jobs:
     runs-on: ubuntu-latest
     
     strategy:
-      fail-fast: false  # Não parar se uma versão falhar
+      fail-fast: false
       matrix:
-        python-version: ['3.10']  # Testar apenas uma versão por enquanto
+        python-version: ['3.10']
     
     steps:
-    - name: Checkout código
+    - name: Checkout codigo
       uses: actions/checkout@v3
     
     - name: Setup Python ${{ matrix.python-version }}
@@ -42,19 +42,19 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-pip-
     
-    - name: Instalar dependências
+    - name: Instalar dependencias
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         pip install pytest pytest-cov
     
-    - name: Verificar estrutura básica
+    - name: Verificar estrutura basica
       run: |
         ls -la
-        echo "Conteúdo da pasta scripts:"
-        ls -la scripts/ || echo "Pasta scripts não encontrada"
+        echo "Conteudo da pasta scripts:"
+        ls -la scripts/ || echo "Pasta scripts nao encontrada"
     
-    - name: Validar scripts (compilação)
+    - name: Validar scripts (compilacao)
       run: |
         python -m py_compile scripts/00_download_data.py
         python -m py_compile scripts/01_process_data.py
@@ -65,61 +65,61 @@ jobs:
     
     - name: Testar imports principais
       run: |
-        python -c "import pandas; print(f'✓ pandas {pandas.__version__}')"
-        python -c "import numpy; print(f'✓ numpy {numpy.__version__}')"
-        python -c "import statsmodels; print(f'✓ statsmodels {statsmodels.__version__}')"
-        python -c "import yfinance; print(f'✓ yfinance {yfinance.__version__}')"
+        python -c "import pandas; print('OK pandas ' + pandas.__version__)"
+        python -c "import numpy; print('OK numpy ' + numpy.__version__)"
+        python -c "import statsmodels; print('OK statsmodels ' + statsmodels.__version__)"
+        python -c "import yfinance; print('OK yfinance ' + yfinance.__version__)"
       continue-on-error: false
     
-    - name: Executar testes unitários
+    - name: Executar testes unitarios
       run: |
         if [ -d "tests" ] && [ "$(ls -A tests/*.py 2>/dev/null)" ]; then
-          echo "✓ Pasta tests encontrada, executando testes..."
-          pytest tests/ -v --tb=short || echo "⚠ Alguns testes falharam, mas continuando..."
+          echo "Pasta tests encontrada, executando testes..."
+          pytest tests/ -v --tb=short || echo "Alguns testes falharam, mas continuando..."
         else
-          echo "⚠ Pasta tests não encontrada ou vazia, pulando testes unitários"
-          echo "✓ Isso é OK - testes são opcionais"
+          echo "Pasta tests nao encontrada ou vazia, pulando testes unitarios"
+          echo "Isso e OK - testes sao opcionais"
         fi
       continue-on-error: true
     
-    - name: Teste de download rápido
+    - name: Teste de download rapido
       run: |
-        python -c "
-import yfinance as yf
-from datetime import datetime, timedelta
-
-print('Testando download de dados...')
-end_date = datetime.now()
-start_date = end_date - timedelta(days=30)
-
-try:
-    data = yf.download('FXI', start=start_date.strftime('%Y-%m-%d'), 
-                       end=end_date.strftime('%Y-%m-%d'), progress=False)
-    assert len(data) > 0, 'Download retornou vazio'
-    print(f'✓ Download funcional: {len(data)} dias de dados')
-except Exception as e:
-    print(f'⚠ Download falhou: {str(e)}')
-    print('Isso pode ser temporário - API do Yahoo às vezes falha')
-        "
+        python << 'EOF'
+        import yfinance as yf
+        from datetime import datetime, timedelta
+        
+        print('Testando download de dados...')
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=30)
+        
+        try:
+            data = yf.download('FXI', start=start_date.strftime('%Y-%m-%d'), 
+                               end=end_date.strftime('%Y-%m-%d'), progress=False)
+            assert len(data) > 0, 'Download retornou vazio'
+            print(f'Download funcional: {len(data)} dias de dados')
+        except Exception as e:
+            print(f'Download falhou: {str(e)}')
+            print('Isso pode ser temporario - API do Yahoo as vezes falha')
+        EOF
       continue-on-error: true
       timeout-minutes: 2
     
-    - name: ✅ Resumo
+    - name: Resumo Final
       if: always()
       run: |
         echo ""
         echo "======================================"
-        echo "  RESUMO DA EXECUÇÃO"
+        echo "  RESUMO DA EXECUCAO"
         echo "======================================"
-        echo "✓ Dependências instaladas"
-        echo "✓ Scripts validados"
-        echo "✓ Imports funcionam"
+        echo "OK Dependencias instaladas"
+        echo "OK Scripts validados"
+        echo "OK Imports funcionam"
         echo ""
-        echo "Status: Testes concluídos!"
+        echo "Status: Testes concluidos!"
         echo "======================================"
 
   docs:
-    name: Validar Documentação
+    name: Validar Documentacao
     runs-on: ubuntu-latest
     
     steps:
@@ -128,7 +128,7 @@ except Exception as e:
     - name: Verificar arquivos essenciais
       run: |
         cd Assimetria-Macro
-        echo "Verificando documentação..."
+        echo "Verificando documentacao..."
         
         files=(
           "README.md"
@@ -141,19 +141,19 @@ except Exception as e:
         missing_files=0
         for file in "${files[@]}"; do
           if [ -f "$file" ]; then
-            echo "✓ $file"
+            echo "OK $file"
           else
-            echo "✗ $file não encontrado"
+            echo "ERRO $file nao encontrado"
             missing_files=$((missing_files + 1))
           fi
         done
         
         if [ $missing_files -eq 0 ]; then
           echo ""
-          echo "✓ Todos os arquivos de documentação presentes!"
+          echo "Todos os arquivos de documentacao presentes!"
         else
           echo ""
-          echo "⚠ $missing_files arquivo(s) faltando"
+          echo "Aviso: $missing_files arquivo(s) faltando"
         fi
 
   status:
@@ -174,9 +174,9 @@ except Exception as e:
         echo ""
         
         if [ "${{ needs.test.result }}" == "success" ] || [ "${{ needs.test.result }}" == "skipped" ]; then
-          echo "✓ Testes OK!"
+          echo "Testes OK!"
           exit 0
         else
-          echo "⚠ Alguns testes falharam - veja logs acima"
+          echo "Alguns testes falharam - veja logs acima"
           exit 1
         fi

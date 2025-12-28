@@ -1,0 +1,193 @@
+name: Tests e Validação
+
+# Executar em push e pull requests para branch main
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Testes Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, '3.10', '3.11']
+    
+    steps:
+    # 1. Checkout do código
+    - name: Checkout código
+      uses: actions/checkout@v3
+    
+    # 2. Setup Python
+    - name: Setup Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    # 3. Cache de dependências (acelera builds)
+    - name: Cache pip
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    # 4. Instalar dependências
+    - name: Instalar dependências
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov
+    
+    # 5. Verificar estrutura de pastas
+    - name: Verificar estrutura
+      run: |
+        python -c "import os; assert os.path.exists('scripts'), 'Pasta scripts/ não encontrada'"
+        python -c "import os; assert os.path.exists('run_pipeline.py'), 'run_pipeline.py não encontrado'"
+    
+    # 6. Executar testes unitários
+    - name: Executar testes
+      run: |
+        pytest tests/ -v --tb=short
+    
+    # 7. Verificar imports dos scripts (sem executar)
+    - name: Validar scripts
+      run: |
+        python -m py_compile scripts/00_download_data.py
+        python -m py_compile scripts/01_process_data.py
+        python -m py_compile scripts/02_leadlag_analysis.py
+        python -m py_compile scripts/03_synchronization.py
+        python -m py_compile run_pipeline.py
+    
+    # 8. Teste de importação de bibliotecas críticas
+    - name: Testar imports
+      run: |
+        python -c "import pandas; print(f'pandas {pandas.__version__}')"
+        python -c "import numpy; print(f'numpy {numpy.__version__}')"
+        python -c "import statsmodels; print(f'statsmodels {statsmodels.__version__}')"
+        python -c "import yfinance; print(f'yfinance {yfinance.__version__}')"
+    
+    # 9. Gerar badge de cobertura (opcional)
+    - name: Cobertura de código
+      if: matrix.python-version == '3.10'
+      run: |
+        pytest tests/ --cov=scripts --cov-report=xml
+    
+    # 10. Upload de resultados (opcional)
+    - name: Upload cobertura
+      if: matrix.python-version == '3.10'
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./coverage.xml
+        fail_ci_if_error: false
+
+  lint:
+    name: Linting e Qualidade de Código
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Instalar linters
+      run: |
+        pip install flake8 black isort
+    
+    # Verificar estilo com flake8 (PEP 8)
+    - name: Flake8
+      run: |
+        # Parar se houver erros críticos
+        flake8 scripts/ --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Avisos (não bloqueia)
+        flake8 scripts/ --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
+      continue-on-error: true
+    
+    # Verificar formatação com black
+    - name: Black
+      run: |
+        black --check scripts/ run_pipeline.py
+      continue-on-error: true
+
+  docs:
+    name: Validar Documentação
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Verificar arquivos de documentação
+      run: |
+        test -f README.md || (echo "README.md não encontrado" && exit 1)
+        test -f FRAMEWORK.md || (echo "FRAMEWORK.md não encontrado" && exit 1)
+        test -f IMPLEMENTATION_GUIDE.md || (echo "IMPLEMENTATION_GUIDE.md não encontrado" && exit 1)
+        test -f CONTRIBUTING.md || (echo "CONTRIBUTING.md não encontrado" && exit 1)
+        test -f CHANGELOG.md || (echo "CHANGELOG.md não encontrado" && exit 1)
+        test -f LICENSE || (echo "LICENSE não encontrado" && exit 1)
+    
+    - name: Verificar links no README
+      run: |
+        # Verificar se links internos existem
+        grep -o '\[.*\]([^h].*\.md)' README.md | sed 's/.*(\(.*\))/\1/' | while read link; do
+          test -f "$link" || (echo "Link quebrado: $link" && exit 1)
+        done
+      continue-on-error: true
+
+  # Job extra: teste rápido de download (não executar pipeline completo)
+  quick-test:
+    name: Teste Rápido de Download
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+    
+    - name: Instalar dependências
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Teste de download (apenas 1 ETF, 1 mês)
+      run: |
+        python -c "
+import yfinance as yf
+from datetime import datetime, timedelta
+
+# Testar download básico
+end_date = datetime.now()
+start_date = end_date - timedelta(days=30)
+
+data = yf.download('FXI', start=start_date.strftime('%Y-%m-%d'), 
+                   end=end_date.strftime('%Y-%m-%d'), progress=False)
+
+assert len(data) > 0, 'Download falhou'
+print(f'✅ Download funcional: {len(data)} dias')
+        "
+      timeout-minutes: 2
+
+# Notificação de sucesso (opcional)
+  notify:
+    name: Notificar Resultado
+    runs-on: ubuntu-latest
+    needs: [test, lint, docs]
+    if: always()
+    
+    steps:
+    - name: Status
+      run: |
+        if [ "${{ needs.test.result }}" == "success" ] && [ "${{ needs.lint.result }}" == "success" ] && [ "${{ needs.docs.result }}" == "success" ]; then
+          echo "✅ Todos os testes passaram!"
+        else
+          echo "❌ Alguns testes falharam"
+          exit 1
+        fi

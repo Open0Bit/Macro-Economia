@@ -298,6 +298,116 @@ Testa se rotação para ativos defensivos ocorre antes de manifestações de est
 
 ---
 
+## 📂 Estrutura de Outputs
+
+Após executar o pipeline, os seguintes arquivos serão gerados:
+
+### Dados Processados (`data/processed/`)
+
+| Arquivo | Descrição | Uso |
+|---------|-----------|-----|
+| [`etf_returns.csv`](data/processed/etf_returns.csv) | Retornos logarítmicos diários | Análise de correlação |
+| [`stress_index.csv`](data/processed/stress_index.csv) | Índice de Estresse Sistêmico | Identificação de crises |
+| [`exposure_proxy.csv`](data/processed/exposure_proxy.csv) | Proxy de exposição (FXI/SPY) | Comportamento institucional |
+| [`defensive_concentration.csv`](data/processed/defensive_concentration.csv) | Concentração defensiva (GLD/FXI) | Event studies |
+| [`synchronization_index.csv`](data/processed/synchronization_index.csv) | Índice de sincronização | Análise de convergência |
+| [`monthly_data.csv`](data/processed/monthly_data.csv) | Dados agregados mensais | Análise VAR |
+
+### Visualizações (`figures/`)
+
+| Figura | Preview | Descrição |
+|--------|---------|-----------|
+| [`cross_correlation.png`](figures/cross_correlation.png) | ![Preview](figures/cross_correlation.png) | Correlação cruzada Exposure × Stress |
+| [`impulse_response.png`](figures/impulse_response.png) | ![Preview](figures/impulse_response.png) | Funções impulso-resposta (VAR) |
+| [`synchronization_analysis.png`](figures/synchronization_analysis.png) | ![Preview](figures/synchronization_analysis.png) | Análise comparativa de sincronização |
+| [`comprehensive_report.png`](figures/comprehensive_report.png) | ![Preview](figures/comprehensive_report.png) | Painel consolidado completo |
+
+> **💡 Dica:** Os links acima funcionarão após a primeira execução do pipeline. As imagens serão exibidas diretamente no GitHub.
+
+---
+
+## 📖 Documentação Completa
+
+- **[FRAMEWORK.md](FRAMEWORK.md)** - Framework teórico-metodológico completo (8.500 palavras)
+  - Teoria de preparação assimétrica
+  - Protocolo metodológico detalhado
+  - Análise demonstrativa China 2020-2024
+  - Referências acadêmicas
+  
+- **[IMPLEMENTATION_GUIDE.md](IMPLEMENTATION_GUIDE.md)** - Guia prático de implementação
+  - Setup passo a passo
+  - Troubleshooting detalhado
+  - Customização de análises
+  - Replicação para outros países
+
+- **[CONTRIBUTING.md](CONTRIBUTING.md)** - Guia para contribuidores
+  
+- **[CHANGELOG.md](CHANGELOG.md)** - Histórico de versões
+
+- **[CITATION.cff](CITATION.cff)** - Citação acadêmica padronizada
+
+---
+
+## 🔬 Para Pesquisadores Acadêmicos
+
+Se você planeja usar este framework em pesquisa acadêmica:
+
+1. **Leia primeiro:** [FRAMEWORK.md](FRAMEWORK.md) - Contém toda a teoria e metodologia
+2. **Implemente:** Use este README como guia prático
+3. **Cite:** Use [CITATION.cff](CITATION.cff) ou formato BibTeX abaixo
+
+```bibtex
+@misc{soares2024preparacao,
+  author = {Soares, Gabriel W.},
+  title = {Framework Teórico-Metodológico: Preparação Assimétrica e Crises Sistêmicas},
+  year = {2024},
+  publisher = {GitHub},
+  howpublished = {\url{https://github.com/Open0Bit/Macro-Economia/tree/main/Assimetria-Macro}},
+  note = {Versão 3.0}
+}
+```
+
+---
+
+## 🎯 Exemplos de Uso
+
+### Análise Rápida (5 minutos)
+```bash
+git clone https://github.com/Open0Bit/Macro-Economia.git
+cd Macro-Economia/Assimetria-Macro
+pip install -r requirements.txt
+python run_pipeline.py
+# Veja resultados em figures/ e data/processed/
+```
+
+### Análise Customizada (30 minutos)
+```bash
+# 1. Modificar período em scripts/00_download_data.py
+start_date = "2015-01-01"  # Seu período desejado
+
+# 2. Adicionar novos ETFs
+etfs = {
+    'FXI': 'iShares China Large-Cap ETF',
+    'EWZ': 'iShares MSCI Brazil ETF',  # Exemplo: adicionar Brasil
+}
+
+# 3. Re-executar
+python run_pipeline.py
+```
+
+### Pesquisa Acadêmica (1-2 semanas)
+```bash
+# 1. Replicar framework base
+python run_pipeline.py
+
+# 2. Ler teoria completa
+cat FRAMEWORK.md
+
+# 3. Adaptar para seu contexto
+# Editar scripts conforme IMPLEMENTATION_GUIDE.md
+
+# 4. Escrever paper usando FRAMEWORK.md como template
+```
 ## Extensões e Pesquisa Futura
 
 ### Replicação Geográfica

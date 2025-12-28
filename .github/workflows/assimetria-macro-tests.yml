@@ -11,14 +11,14 @@ on:
     paths:
       - 'Assimetria-Macro/**'
 
-defaults:
-  run:
-    working-directory: Assimetria-Macro
-
 jobs:
   test:
     name: Testes Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: Assimetria-Macro
     
     strategy:
       fail-fast: false
@@ -50,6 +50,7 @@ jobs:
     
     - name: Verificar estrutura basica
       run: |
+        pwd
         ls -la
         echo "Conteudo da pasta scripts:"
         ls -la scripts/ || echo "Pasta scripts nao encontrada"
@@ -122,12 +123,16 @@ jobs:
     name: Validar Documentacao
     runs-on: ubuntu-latest
     
+    defaults:
+      run:
+        working-directory: Assimetria-Macro
+    
     steps:
     - uses: actions/checkout@v3
     
     - name: Verificar arquivos essenciais
       run: |
-        cd Assimetria-Macro
+        pwd
         echo "Verificando documentacao..."
         
         files=(
@@ -173,10 +178,10 @@ jobs:
         echo "Docs: ${{ needs.docs.result }}"
         echo ""
         
-        if [ "${{ needs.test.result }}" == "success" ] || [ "${{ needs.test.result }}" == "skipped" ]; then
-          echo "Testes OK!"
+        if [ "${{ needs.test.result }}" == "success" ] && [ "${{ needs.docs.result }}" == "success" ]; then
+          echo "Todos os jobs passaram!"
           exit 0
         else
-          echo "Alguns testes falharam - veja logs acima"
+          echo "Alguns jobs falharam - veja logs acima"
           exit 1
         fi

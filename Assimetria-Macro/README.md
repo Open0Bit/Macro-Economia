@@ -7,7 +7,8 @@
 
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/License-MIT-green)
-![Data](https://img.shields.io/badge/Data-Public%20Only-orange)
+![Status](https://img.shields.io/badge/Status-Stable-success)
+![Contributions](https://img.shields.io/badge/Contributions-Welcome-orange)
 
 ---
 

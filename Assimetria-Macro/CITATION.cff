@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "Se você usar este framework, por favor cite como:"
+authors:
+  - family-names: "Soares"
+    given-names: "Gabriel W."
+title: "Framework Teórico-Metodológico: Preparação Assimétrica"
+version: 3.0
+date-released: 2024-12-27
+url: "https://github.com/Open0Bit/Macro-Economia/tree/main/Assimetria-Macro"

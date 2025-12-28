@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
     paths:
       - 'Assimetria-Macro/**'
-      - '.github/workflows/tests.yml'
+      - '.github/workflows/assimetria-macro-tests.yml'
   pull_request:
     branches: [ main ]
     paths:

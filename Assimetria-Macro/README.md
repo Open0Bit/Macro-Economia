@@ -9,6 +9,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Stable-success)
 ![Contributions](https://img.shields.io/badge/Contributions-Welcome-orange)
+![Tests](https://https://github.com/Open0Bit/Macro-Economia/blob/main/Assimetria-Macro/.github/workflows/Tests%20e%20Validação/badge.svg)
 
 ---
 

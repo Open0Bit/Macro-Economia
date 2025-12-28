@@ -49,22 +49,37 @@ Sistemas financeiros exibem não-linearidade: pequenos fluxos são absorvidos, m
 ```
 Assimetria-Macro/
 │
+├── README.md
+├── CHANGELOG.md
+├── .env.example
+│
+├── docs/
+│   ├── FRAMEWORK.md
+│   ├── LITERATURE_REVIEW.md
+│   ├── METHODOLOGICAL_LIMITS.md
+│   ├── VALIDATION_CROSS_GEOGRAPHY.md
+│   └── VALIDATION_SYNTHETIC_SIMULATION.md
+│
+├── guides/
+│   ├── IMPLEMENTATION_GUIDE.md
+│   └── SETUP_GUIDE.md
+│
+├── pipeline/
+│   ├── run_pipeline.py
+│   └── scripts/
+│       ├── 00_download_data.py
+│       ├── 01_process_data.py
+│       ├── 02_leadlag_analysis.py
+│       └── 03_synchronization.py
+│
 ├── data/
-│   ├── raw/                  # Dados brutos (ETFs, indicadores macro)
-│   └── processed/            # Dados processados (índices, retornos)
+│   └── processed/
 │
-├── scripts/
-│   ├── 00_download_data.py   # Download de dados públicos
-│   ├── 01_process_data.py    # Processamento e índices
-│   ├── 02_leadlag_analysis.py    # Causalidade de Granger
-│   └── 03_synchronization.py     # Sincronização e event studies
+├── tests/
 │
-├── figures/                  # Visualizações geradas
-│
-├── FRAMEWORK.md                   # Framework teórico completo (v3.0)
-├── run_pipeline.py           # Orquestrador principal
-├── requirements.txt          # Dependências Python
-└── README.md                 # Este arquivo
+├── requirements.txt
+├── LICENSE
+└── CITATION.cff
 ```
 
 ---
